@@ -1,0 +1,343 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API Example - Clean Architecture",
+    "description": "Una API REST construida con Express.js y TypeScript que implementa Clean Architecture para el manejo de ejemplos (resources).\n\n## Arquitectura\n\nEste proyecto implementa **Clean Architecture** con las siguientes capas:\n- **Domain**: Entidades y interfaces del núcleo del negocio\n- **Application**: Casos de uso y lógica de aplicación  \n- **Infrastructure**: Controladores HTTP, persistencia y middleware\n\n## Características\n\n- ✅ Clean Architecture\n- ✅ TypeScript\n- ✅ Manejo de errores centralizado\n- ✅ Inyección de dependencias\n- ✅ Operaciones CRUD completas",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "ISC",
+      "url": "https://opensource.org/licenses/ISC"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de desarrollo"
+    },
+    {
+      "url": "https://api.example.com",
+      "description": "Servidor de producción"
+    }
+  ],
+  "paths": {
+    "/example": {
+      "get": {
+        "tags": ["Examples"],
+        "summary": "Obtener todos los ejemplos",
+        "description": "Retorna una lista de todos los ejemplos almacenados en el sistema",
+        "operationId": "getAllExamples",
+        "responses": {
+          "200": {
+            "description": "Lista de ejemplos obtenida exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Example"
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Respuesta exitosa",
+                    "value": [
+                      {
+                        "id": "1",
+                        "name": "Ejemplo 1"
+                      },
+                      {
+                        "id": "2",
+                        "name": "Ejemplo 2"
+                      }
+                    ]
+                  },
+                  "empty": {
+                    "summary": "Lista vacía",
+                    "value": []
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Examples"],
+        "summary": "Crear un nuevo ejemplo",
+        "description": "Crea un nuevo ejemplo en el sistema",
+        "operationId": "createExample",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExampleRequest"
+              },
+              "examples": {
+                "create": {
+                  "summary": "Crear ejemplo",
+                  "value": {
+                    "name": "Nuevo ejemplo"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ejemplo creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Example"
+                },
+                "examples": {
+                  "created": {
+                    "summary": "Ejemplo creado",
+                    "value": {
+                      "id": "3",
+                      "name": "Nuevo ejemplo"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/example/{id}": {
+      "get": {
+        "tags": ["Examples"],
+        "summary": "Obtener ejemplo por ID",
+        "description": "Retorna un ejemplo específico identificado por su ID",
+        "operationId": "getExampleById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID único del ejemplo",
+            "schema": {
+              "type": "string"
+            },
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ejemplo encontrado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Example"
+                },
+                "examples": {
+                  "found": {
+                    "summary": "Ejemplo encontrado",
+                    "value": {
+                      "id": "1",
+                      "name": "Ejemplo 1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Examples"],
+        "summary": "Eliminar ejemplo por ID",
+        "description": "Elimina un ejemplo específico identificado por su ID",
+        "operationId": "deleteExampleById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID único del ejemplo a eliminar",
+            "schema": {
+              "type": "string"
+            },
+            "example": "1"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Ejemplo eliminado exitosamente"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Example": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único del ejemplo",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre del ejemplo",
+            "example": "Ejemplo 1"
+          }
+        }
+      },
+      "CreateExampleRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del nuevo ejemplo",
+            "minLength": 1,
+            "maxLength": 255,
+            "example": "Nuevo ejemplo"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error", "message"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Tipo de error",
+            "example": "VALIDATION_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensaje descriptivo del error",
+            "example": "El campo 'name' es requerido"
+          },
+          "details": {
+            "type": "object",
+            "description": "Detalles adicionales del error"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp del error",
+            "example": "2024-01-15T10:30:00Z"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Solicitud malformada o datos inválidos",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "validation_error": {
+                "summary": "Error de validación",
+                "value": {
+                  "error": "VALIDATION_ERROR",
+                  "message": "El campo 'name' es requerido",
+                  "timestamp": "2024-01-15T10:30:00Z"
+                }
+              },
+              "invalid_json": {
+                "summary": "JSON inválido",
+                "value": {
+                  "error": "INVALID_JSON",
+                  "message": "El formato JSON es inválido",
+                  "timestamp": "2024-01-15T10:30:00Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Recurso no encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "not_found": {
+                "summary": "Ejemplo no encontrado",
+                "value": {
+                  "error": "NOT_FOUND",
+                  "message": "El ejemplo con ID '999' no existe",
+                  "timestamp": "2024-01-15T10:30:00Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Error interno del servidor",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "server_error": {
+                "summary": "Error interno",
+                "value": {
+                  "error": "INTERNAL_SERVER_ERROR",
+                  "message": "Ha ocurrido un error interno del servidor",
+                  "timestamp": "2024-01-15T10:30:00Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Examples",
+      "description": "Operaciones relacionadas con ejemplos",
+      "externalDocs": {
+        "description": "Documentación adicional",
+        "url": "https://github.com/tu-usuario/api-example"
+      }
+    }
+  ],
+  "externalDocs": {
+    "description": "Repositorio del proyecto",
+    "url": "https://github.com/tu-usuario/api-example"
+  }
+} 
