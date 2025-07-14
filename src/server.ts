@@ -7,7 +7,6 @@ dotenv.config({
 
 import { GetAllExampleController } from "./example/infrastructure/http/GetAllExampleController";
 import { GetAllExample } from "./example/application/GetAllExample";
-import { ExampleRepositoryMemory } from "./example/infrastructure/persistence/ExampleRepositoryMemory";
 import { GetByIdExampleController } from "./example/infrastructure/http/GetByIdExampleController";
 import { GetByIdExample } from "./example/application/GetByIdExample";
 import { SaveExampleController } from "./example/infrastructure/http/SaveExampleController";
@@ -16,11 +15,13 @@ import { DeleteExampleController } from "./example/infrastructure/http/DeleteExa
 import { DeleteByIdExample } from "./example/application/DeleteByIdExample";
 import { ErrorManager } from "./example/infrastructure/tracing/ErrorManager";
 import { ErrorHandlingMiddleware } from "./example/infrastructure/middleware/ErrorHandlingMiddleware";
+import { ExampleRepositoryMysql } from "./example/infrastructure/persistence/ExampleRepositoryMysql";
+import { MysqlConnection } from "./example/infrastructure/persistence/MysqlConnection";
 
 const app = express();
 app.use(express.json());
 
-const exampleRepository = new ExampleRepositoryMemory();
+const exampleRepository = new ExampleRepositoryMysql(new MysqlConnection());
 
 const getAllExampleUseCase = new GetAllExample(exampleRepository);
 const getByIdExampleUseCase = new GetByIdExample(exampleRepository);
